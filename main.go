@@ -52,7 +52,7 @@ func main() {
 	}
 	b := []byte(`{
 		"message": "getdevicelist",
-		"pushdevice": "robot",
+		"pushdevice": "robot1",
 	"sn": "1",
 		"body": {
 	
@@ -68,14 +68,22 @@ func main() {
 			]
 		}
 	}`)
-	dbCli.AddDevice("aliveyun",b)
+	var count int
+	count=100000;
+ for i := 0; i < count; i++ {
+	 
+ 
+	dbCli.AddDevice(b)
 	m,_:=dbCli.GetDevice("aliveyun")
 	var msg MsgHead
 	if err := json.Unmarshal(m, &msg); err != nil {
 		//return errors.Wrapf(err, "Unmarshal %s", m)
 		fmt.Println("4444",err)
 	}
+
 	fmt.Println("555",msg)
+
+}
 	/*dbCli, err := mongo.NewClient(conf)
 	if err != nil {
 		panic(err)

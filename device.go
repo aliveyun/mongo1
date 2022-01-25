@@ -55,7 +55,7 @@ func NewDB(cfg *mongo.MgoConf) (*Device, error) {
 		c:c,
 	}, nil
 }
-func (c *Device) AddDevice(pushdevice string,message []byte) error {
+func (c *Device) AddDevice(message []byte) error {
 	var msg MsgHead
 	if err := json.Unmarshal(message, &msg); err != nil {
 		glog.Warningf("Unmarshal  Signal  err:%v\n", err)
@@ -68,13 +68,13 @@ func (c *Device) AddDevice(pushdevice string,message []byte) error {
 			// glog.Debugf("recv: v=%v",  v)	
 			// glog.Debugf("recv: %s %s",  v.Rtsp,v.Rtmp)	
 			item:= &pull{
-				DeviceID:     pushdevice,
+				DeviceID:     msg.Pushdevice,
 				RTSP:   v.Rtsp,
 				RTMP:   v.Rtmp,
 			}
 			cols = append(cols, item)
-			id,_:=c.FindOneDevice(v.Rtsp ,v.Rtmp,pushdevice)
-			glog.Debugf("store.FindMany fail err=%s",id)
+			id,_:=c.FindOneDevice(v.Rtsp ,v.Rtmp,msg.Pushdevice)
+			glog.Debugf("FindOneDevice=%s",id)
 			c.DelOneDevice(id)
 		}
 		docs := make([]interface{}, 0)
@@ -153,8 +153,9 @@ func (c *Device) DelOneDevice(ID string)  error {
 	}
 	_, err := c.c.Store().DeleteOne(context.TODO(), col)
 	if err != nil {
-	//	t.Fatal(err)
+		glog.Debugf("DelOneDevice id=%s fail=%s",ID,err)
 	}
+	glog.Debugf("DelOneDevice=%s",ID)
 	//t.Log("cnt", cnt)
 	return err
 }
